@@ -2,45 +2,33 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-car_data = pd.read_csv('vehicles_us.csv')  # leer los datos
-st.header("Análisis de Vehículos en Estados Unidos")
-
-# ---------------------------
-# Cargar los datos
-# ---------------------------
-# Asegúrate de que 'vehicles_us.csv' esté en la misma carpeta que app.py
+# Leer los datos
 car_data = pd.read_csv('vehicles_us.csv')
 
-# ---------------------------
-# Histograma
-# ---------------------------
-st.subheader("Histograma de Kilometraje")
-st.write("Haz clic en el botón para generar un histograma de los kilometrajes (odometer) de los vehículos:")
+# Encabezado
+st.header("Visualización de datos de vehículos")
 
-if st.button("Mostrar Histograma"):
-    fig_hist = px.histogram(
-        car_data,
-        x="odometer",
-        nbins=30,
-        title="Distribución de Kilometraje de Vehículos",
-        labels={"odometer": "Kilometraje (millas)"}
-    )
+# Casillas de verificación
+show_histogram = st.checkbox("Mostrar histograma de odómetro")
+show_scatter = st.checkbox("Mostrar gráfico de dispersión precio vs odómetro")
+
+# Mostrar histograma si se selecciona la casilla
+if show_histogram:
+    fig_hist = px.histogram(car_data, x="odometer",
+                            nbins=50, title="Histograma de Odometer")
+    st.write("Histograma de Odometer")
     st.plotly_chart(fig_hist)
 
-# ---------------------------
-# Gráfico de dispersión
-st.subheader("Gráfico de Dispersión: Precio vs Kilometraje")
-st.write("Haz clic en el botón para generar un gráfico de dispersión donde se vea la relación entre precio y kilometraje:")
-
-if st.button("Mostrar Scatter Plot"):
+# Mostrar gráfico de dispersión si se selecciona la casilla
+if show_scatter:
     fig_scatter = px.scatter(
         car_data,
         x="odometer",
         y="price",
-        title="Precio vs Kilometraje",
-        labels={"odometer": "Kilometraje (millas)", "price": "Precio (USD)"},
-        color="model_year",           # colorea por año del modelo
-        # muestra modelo y condición al pasar el mouse
-        hover_data=["model", "condition"]
+        # columnas disponibles
+        hover_data=["model", "model_year", "condition"],
+        color="fuel",  # opcional: colorear por tipo de combustible
+        title="Precio vs Odometer"
     )
+    st.write("Gráfico de dispersión Precio vs Odometer")
     st.plotly_chart(fig_scatter)
